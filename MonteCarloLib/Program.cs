@@ -6,7 +6,15 @@ namespace MonteCarloLib
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Monte Carlo  Algorithm Tests");
+
+
+
+
+
+
+            Console.ReadLine();  
+
         }
     }
 }
