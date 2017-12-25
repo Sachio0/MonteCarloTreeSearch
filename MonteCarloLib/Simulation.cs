@@ -8,21 +8,25 @@ using System.Text;
 namespace MonteCarloLib
 {
     public class Simulation
-    { 
-
+    {  
         private Func<int, long, bool> _predicate;  
         
         public Simulation(Func<int, long, bool> predicate)
         {
             _predicate = predicate; 
-        }
-              
+        }       
+
+       /// <summary>
+       /// Simulate Here :  
+       /// </summary>
+       /// <param name="root"></param>
+       /// <param name="player"></param>
+       /// <param name="threads"></param>
         public void Simulate(Node root, Player player, int threads=  4)
         {
             int number = 0;
             Stopwatch stop = Stopwatch.StartNew(); 
-            Queue<Node> quue = new Queue<Node>();  
-                
+            Queue<Node> quue = new Queue<Node>();   
             //
             while (_predicate(number,stop.ElapsedMilliseconds)) 
             {
@@ -30,22 +34,24 @@ namespace MonteCarloLib
                 
                 while (quue.Count > 0)
                 { 
-                    Node current = quue.Dequeue() ;
+                    Node current = quue.Dequeue() ;   
 
+                    // Selection  
                     if (current.ExpandedNodes.Count > 0)
                     {
                         current = current._ChildNodes.OrderByDescending(c => c.UCB1).FirstOrDefault();
                         current._ChildNodes.OrderByDescending(c => c.UCB1).ToList().ForEach(x => quue.Enqueue(x)); 
-                    }
+                    }  
 
+                    // Expansion 
                     if (current.Points > 0 && current._ChildNodes.Count > 0)
                     {
                         current.ExpandedNodes = current._ChildNodes;
                         current = current.ExpandedNodes.FirstOrDefault();
-                    }
-
+                    }    
+                    // Rollout Phase  
                     while (!player.TakeAction(current, current.GetRandomAction()))
-                     player.AcceptLastMove();                                           
+                     player.AcceptLastMove();  
                     
                     // back Propagation
                     while (current != null)
@@ -55,8 +61,7 @@ namespace MonteCarloLib
                             current.Points = 0;
                         current.Points += player.LastAction?._value ?? 0;
                         current = current.Parent;
-                    }   
-
+                    }    
                     number++; 
                 }
                    
