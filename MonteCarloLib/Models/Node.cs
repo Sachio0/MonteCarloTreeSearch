@@ -34,7 +34,7 @@ namespace MonteCarloLib.Models
                         return double.MaxValue;
                     return res; 
                 } 
-                return double.MaxValue;
+                return 0;
             }
         }  
 

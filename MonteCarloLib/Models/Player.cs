@@ -11,6 +11,10 @@ namespace MonteCarloLib.Models
 
         public bool TakeAction(Node node, NodeAction action)
         {
+            double res = 0; 
+            for (int x = 10; x < 10000; x++)
+                res =Math.Sqrt(x) * x;
+             
 
             if (action == null)
                 return true;
@@ -18,6 +22,13 @@ namespace MonteCarloLib.Models
             node.AvalableActions.Remove(action);
             return action.Terminal;  
         }
+
+
+        public void AcceptLastMove()
+        {
+
+        }
+
 
 
     }

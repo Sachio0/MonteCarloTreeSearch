@@ -17,49 +17,49 @@ namespace MonteCarloLib
             _predicate = predicate; 
         }
               
-        public void Simulate(Node root, Player player)
+        public void Simulate(Node root, Player player, int threads=  4)
         {
             int number = 0;
-
-            Stopwatch stop = Stopwatch.StartNew();
-             
-            while (_predicate(number,stop.ElapsedMilliseconds))
-            { 
-                Node current = root;
-
-                if (current.ExpandedNodes.Count>0)
+            Stopwatch stop = Stopwatch.StartNew(); 
+            Queue<Node> quue = new Queue<Node>();  
+                
+            //
+            while (_predicate(number,stop.ElapsedMilliseconds)) 
+            {
+                quue.Enqueue(root);  
+                
+                while (quue.Count > 0)
                 { 
-                    current = current._ChildNodes.OrderByDescending(c => c.UCB1).FirstOrDefault(); 
-                }   
+                    Node current = quue.Dequeue() ;
 
-                // Leaf Node 
-                if (current.ExpandedNodes.Count == 0)
-                {
-                     if (current.Points>0)
+                    if (current.ExpandedNodes.Count > 0)
+                    {
+                        current = current._ChildNodes.OrderByDescending(c => c.UCB1).FirstOrDefault();
+                        current._ChildNodes.OrderByDescending(c => c.UCB1).ToList().ForEach(x => quue.Enqueue(x)); 
+                    }
+
+                    if (current.Points > 0 && current._ChildNodes.Count > 0)
                     {
                         current.ExpandedNodes = current._ChildNodes;
-                        current = current.ExpandedNodes.FirstOrDefault();  
-                    } 
-                }     
+                        current = current.ExpandedNodes.FirstOrDefault();
+                    }
 
-                // Rollout :   
-                while (!player.TakeAction(current, current.GetRandomAction()))
-                {
-                    if (player.LastAction != null)
+                    while (!player.TakeAction(current, current.GetRandomAction()))
+                     player.AcceptLastMove();                                           
+                    
+                    // back Propagation
+                    while (current != null)
                     {
-                        current.Points += player.LastAction._value; 
-                    } 
-                }     
+                        current.NumberOfVisits++;
+                        if (current.Points == double.MaxValue)
+                            current.Points = 0;
+                        current.Points += player.LastAction?._value ?? 0;
+                        current = current.Parent;
+                    }   
 
-                // Back Prop:  
-                while (current != null)
-                {
-                    current.NumberOfVisits++;
-                    current.Points += player.LastAction?._value ?? 0; 
-                    current = current.Parent;
-                }  
-
-                number++;  
+                    number++; 
+                }
+                   
             } 
         }
 
