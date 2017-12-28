@@ -34,7 +34,7 @@ namespace MonteCarloLib
                     if (current.ExpandedNodes.Count > 0)
                     {
                         current = current._ChildNodes.OrderByDescending(c => c.UCB1).FirstOrDefault();
-                        current._ChildNodes.OrderByDescending(c => c.UCB1).ToList().ForEach(x => quue.Enqueue(x)); 
+                        current._ChildNodes.OrderByDescending(c => c.UCB1).Skip(1).ToList().ForEach(x => quue.Enqueue(x));
                     }   
 
                     // Expansion 
