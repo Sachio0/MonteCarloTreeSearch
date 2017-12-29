@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -29,7 +29,7 @@ namespace MonteCarloLib.Models
             {
                 if (Parent != null && Parent.NumberOfVisits>0)
                 {
-                   var res =  (Points/NumberOfVisits) +   (Math.Sqrt(2 * Math.Log(Parent.NumberOfVisits) / NumberOfVisits));
+                   var res =  (Points/NumberOfVisits) +   (Math.Sqrt(2 * Math.Log(Parent.NumberOfVisits) / Parent.NumberOfVisits+ NumberOfVisits));
                     if (double.IsNaN(res))
                         return double.MaxValue;
                     return res; 
